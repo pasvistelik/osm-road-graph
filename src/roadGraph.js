@@ -1,5 +1,7 @@
 import initializeFromOsmGraph from '../lib/initialize';
 import distance from 'geo-coords-distance';
+import Points from './dijkstra/points';
+import points from './dijkstra/points';
 
 class RoadGraph {
     constructor(ways, nodes) {
@@ -11,11 +13,31 @@ class RoadGraph {
         return new RoadGraph(result.ways, result.nodes);
     }
 
-    findShortestWay(startNode, FinalNode){
-        let unvisited_nodes = [];
-        let visited_nodes = [];
+    findShortestWay(startNode, finalNode){
+
+        let startSortingMoment = Date.now();
+
+        let points = new Points(startNode, finalNode);
+        points.countShortestWay();
+
+        console.log("TEST 1. Time = " + (Date.now() - startSortingMoment) + " ms.");
 
 
+        let tmp_str = "";
+        let counter = 0;
+        let coordsList = [];
+        for (let currentPoint = points.finalPoint; currentPoint != null; ) {
+            tmp_str += currentPoint.node.id + "("+currentPoint.totalDistance+")" + " < < < ";
+            coordsList.push({
+                lat: currentPoint.node.lat,
+                lng: currentPoint.node.lng
+            });
+
+            currentPoint = currentPoint.previousPoint
+        }
+        console.log(tmp_str);
+        console.log("NODES: "+counter);
+        console.log(JSON.stringify(coordsList));
     }
 
     getNodesAround(coords, radius) {
