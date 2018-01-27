@@ -67,7 +67,7 @@ function initialize(osm_graph_elements) {
     //console.log("Nodes are modified. Time = " + (Date.now() - startSortingMoment) + " ms.");
 
     for (let j = 0, m = ways.length, way = ways[0]; j < m; way = ways[++j]) {
-        let is_oneway = (way.tags.oneway == "yes");
+        let is_oneway = (way.tags.oneway == "yes" || way.tags.junction == "roundabout");
         for (let i = 1, n = way.nodes.length + 1, previous_node = null, current_node = binaryFind(nodes, getFindingNodeFunc(way.nodes[0])), next_node = ((way.nodes[1]) ? binaryFind(nodes, getFindingNodeFunc(way.nodes[1])): null); i < n; previous_node = current_node, current_node = next_node, next_node = ((way.nodes[++i]) ? binaryFind(nodes, getFindingNodeFunc(way.nodes[i])): null)) {
             if (is_oneway) { // if road is one-way only
                 if (next_node){
