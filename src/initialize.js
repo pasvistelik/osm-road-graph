@@ -55,39 +55,54 @@ function initialize(osm_graph_elements) {
 
     let startSortingMoment = Date.now();
     nodes.sort(compare_ids); // ToDo: use TimSort or others if it spend a long time... (nodes in OSM partially sorted)
-    console.log("Sorted. Time = " + (Date.now() - startSortingMoment) + " ms.");
+    //console.log("Sorted. Time = " + (Date.now() - startSortingMoment) + " ms.");
 
     for (let i = 0, n = nodes.length, node = nodes[0]; i < n; node = nodes[++i]) {
         node.local_id = nodes_index++;
         node.next_nodes = [];
+        node.lng = node.lon;
+        //delete node.lon;
         //node.previous_nodes = [];
     }
+    //console.log("Nodes are modified. Time = " + (Date.now() - startSortingMoment) + " ms.");
 
     for (let j = 0, m = ways.length, way = ways[0]; j < m; way = ways[++j]) {
         let is_oneway = (way.tags.oneway == "yes");
         for (let i = 1, n = way.nodes.length + 1, previous_node = null, current_node = binaryFind(nodes, getFindingNodeFunc(way.nodes[0])), next_node = ((way.nodes[1]) ? binaryFind(nodes, getFindingNodeFunc(way.nodes[1])): null); i < n; previous_node = current_node, current_node = next_node, next_node = ((way.nodes[++i]) ? binaryFind(nodes, getFindingNodeFunc(way.nodes[i])): null)) {
             if (is_oneway) { // if road is one-way only
                 if (next_node){
+                    let dist = ~~distance(current_node, next_node);
+                    //let dist = ~~distance({lat: current_node.lat, lng: current_node.lon}, {lat: next_node.lat, lng: next_node.lon})
                     current_node.next_nodes.push({
                         node: next_node,
-                        distance: ~~distance({lat: current_node.lat, lng: current_node.lon}, {lat: next_node.lat, lng: next_node.lon})
+                        distance: dist
                     });
-                    //console.log()
+                    /*next_node.previous_nodes.push({
+                        node: current_node,
+                        distance: dist
+                    });*/
                 }
                 continue;
             }
             if (previous_node) {
+                let dist = ~~distance(current_node, previous_node);
+                //let dist = ~~distance({lat: current_node.lat, lng: current_node.lon}, {lat: previous_node.lat, lng: previous_node.lon})
                 current_node.next_nodes.push({
                     node: previous_node,
-                    distance: ~~distance({lat: current_node.lat, lng: current_node.lon}, {lat: previous_node.lat, lng: previous_node.lon})
+                    distance: dist
                 });
+                /*previous_node.previous_nodes.push({
+                    node: current_node,
+                    distance: dist
+                });*/
             }
         }
     }
 
-    console.log("Initialized. Time = " + (Date.now() - startMoment) + " ms.");
-    console.log(nodes.length);
+    //console.log("Initialized. Time = " + (Date.now() - startMoment) + " ms.");
+    //console.log(nodes.length);
 
+    return { ways, nodes };
 }
 
 export default initialize;
