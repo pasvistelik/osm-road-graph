@@ -13,6 +13,10 @@ class RoadGraph {
         return new RoadGraph(result.ways, result.nodes);
     }
 
+
+    findShortestWayByCoords(fromCoords, toCoords) {
+        return this.findShortestWay(getNearestNode(fromCoords), getNearestNode(toCoords));
+    }
     findShortestWay(startNode, finalNode){
 
         let startSortingMoment = Date.now();
@@ -39,6 +43,8 @@ class RoadGraph {
         //console.log(tmp_str);
         console.log("NODES: "+counter);
         console.log(JSON.stringify(coordsList));
+
+        return coordsList.reverse();
     }
 
     getNodesAround(coords, radius) {
@@ -46,6 +52,18 @@ class RoadGraph {
         for (let i = 0, num_of_nodes = this.nodes.length, node = this.nodes[0]; i < num_of_nodes; node = this.nodes[++i]) {
             if (distance(coords, node /*{lat: node.lat, lng: node.lon}*/) < radius) {
                 result.push(node);
+            }
+        }
+        return result;
+    }
+    getNearestNode(coords) {
+        let result = null;
+        let minDistance = 1000000000;
+        for (let i = 0, num_of_nodes = this.nodes.length, node = this.nodes[0], dist; i < num_of_nodes; node = this.nodes[++i]) {
+            dist = distance(coords, node /*{lat: node.lat, lng: node.lon}*/);
+            if (dist < minDistance) {
+                minDistance = dist;
+                result = node;
             }
         }
         return result;
