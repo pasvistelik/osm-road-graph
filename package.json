@@ -1,7 +1,7 @@
 {
   "name": "osm-road-graph",
   "version": "0.0.0",
-  "main": "lib/roadsGraph.js",
+  "main": "lib/roadGraph.js",
   "scripts": {
     "build": "npm update && babel src --out-dir lib",
     "prepublish": "npm run build",
