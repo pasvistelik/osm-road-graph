@@ -15,7 +15,7 @@ class RoadGraph {
 
 
     findShortestWayByCoords(fromCoords, toCoords) {
-        return this.findShortestWay(getNearestNode(fromCoords), getNearestNode(toCoords));
+        return this.findShortestWay(this.getNearestNode(fromCoords), this.getNearestNode(toCoords));
     }
     findShortestWay(startNode, finalNode){
 
