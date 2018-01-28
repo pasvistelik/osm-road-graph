@@ -51,8 +51,8 @@ class Points {
 
             // Завершаем поиск, если значение метки превышает минимальное найденное расстояние до пункта назначения:
             if (selectedPointTotalDistance > this.finalPoint.totalDistance) {
-                break;
                 console.log("Breaked.");
+                break;
             }
 
             // Просматриваем все возможные дальнейшие шаги из текушей вершины:
@@ -61,8 +61,8 @@ class Points {
                 //console.log("[" + selectedPointNode.id + " to " + nextNodeObj.node.id + "]: " + nextNodeObj.distance);
 
                 let nextPoint = this.findElement(nextNodeObj.node);
-                let oldDistance = nextPoint.totalDistance;
-                if(nextPoint.tryUpdate(selectedPointTotalDistance + nextNodeObj.distance, selectedPoint)) {
+                //let oldDistance = nextPoint.totalDistance;
+                if (nextPoint.tryUpdate(selectedPointTotalDistance + nextNodeObj.distance, selectedPoint)) {
                     /*if(nextPoint == this.finalPoint) {
                         console.log("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
 

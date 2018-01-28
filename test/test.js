@@ -15,7 +15,9 @@ console.log("TEST 0. Time = " + (Date.now() - startSortingMoment) + " ms.");
 
 
 let node1 = roadGraph.nodes[5];
-let node2 = roadGraph.nodes[200];
+//let node1 = roadGraph.getNodesAround({lat: 53.6843, lng: 23.83872}, 50)[0]
+//let node2 = roadGraph.getNodesAround(node1, 5000)[100];
+let node2 = roadGraph.nodes[100];
 
 console.log("["+node1.lat+";"+node1.lng+"]");
 console.log("["+node2.lat+";"+node2.lng+"]");

@@ -33,9 +33,10 @@ class RoadGraph {
                 lng: currentPoint.node.lng
             });
 
-            currentPoint = currentPoint.previousPoint
+            currentPoint = currentPoint.previousPoint;
+            counter++;
         }
-        console.log(tmp_str);
+        //console.log(tmp_str);
         console.log("NODES: "+counter);
         console.log(JSON.stringify(coordsList));
     }

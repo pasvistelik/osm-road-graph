@@ -68,38 +68,40 @@ function initialize(osm_graph_elements) {
 
     for (let j = 0, m = ways.length, way = ways[0]; j < m; way = ways[++j]) {
         let is_oneway = (way.tags.oneway == "yes" || way.tags.junction == "roundabout");
-        for (let i = 1, n = way.nodes.length + 1, previous_node = null, current_node = binaryFind(nodes, getFindingNodeFunc(way.nodes[0])), next_node = ((way.nodes[1]) ? binaryFind(nodes, getFindingNodeFunc(way.nodes[1])): null); i < n; previous_node = current_node, current_node = next_node, next_node = ((way.nodes[++i]) ? binaryFind(nodes, getFindingNodeFunc(way.nodes[i])): null)) {
-            if (is_oneway) { // if road is one-way only
-                if (next_node){
-                    let dist = ~~distance(current_node, next_node);
-                    //let dist = ~~distance({lat: current_node.lat, lng: current_node.lon}, {lat: next_node.lat, lng: next_node.lon})
-                    current_node.next_nodes.push({
-                        node: next_node,
-                        distance: dist
-                    });
-                    /*next_node.previous_nodes.push({
-                        node: current_node,
-                        distance: dist
-                    });*/
-                }
-                continue;
+        for (let previous_dist, dist, i = 1, n = way.nodes.length + 1, previous_node = null, current_node = binaryFind(nodes, getFindingNodeFunc(way.nodes[0])), next_node = ((way.nodes[1]) ? binaryFind(nodes, getFindingNodeFunc(way.nodes[1])): null); i < n; previous_node = current_node, current_node = next_node, next_node = ((way.nodes[++i]) ? binaryFind(nodes, getFindingNodeFunc(way.nodes[i])): null)) {
+
+            if (next_node) {
+                
+                dist = ~~distance(current_node, next_node);
+                //let dist = ~~distance({lat: current_node.lat, lng: current_node.lon}, {lat: next_node.lat, lng: next_node.lon})
+                current_node.next_nodes.push({
+                    node: next_node,
+                    distance: dist
+                });
+                /*next_node.previous_nodes.push({
+                    node: current_node,
+                    distance: dist
+                });*/
+            
             }
-            if (previous_node) {
-                let dist = ~~distance(current_node, previous_node);
+            // if road is not one-way only:
+            if (!is_oneway && previous_node) {
+                //let dist = ~~distance(current_node, previous_node);
                 //let dist = ~~distance({lat: current_node.lat, lng: current_node.lon}, {lat: previous_node.lat, lng: previous_node.lon})
                 current_node.next_nodes.push({
                     node: previous_node,
-                    distance: dist
+                    distance: previous_dist//dist
                 });
                 /*previous_node.previous_nodes.push({
                     node: current_node,
                     distance: dist
                 });*/
             }
+            previous_dist = dist;
         }
     }
 
-    //console.log("Initialized. Time = " + (Date.now() - startMoment) + " ms.");
+    console.log("Initialized. Time = " + (Date.now() - startMoment) + " ms.");
     //console.log(nodes.length);
 
     return { ways, nodes };
