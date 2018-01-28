@@ -1,9 +1,10 @@
-﻿//dijkstra...
+﻿
 class Point {
-    constructor(node, totalDistance) {
+    constructor(node, totalDistance, heuristicDistanceToFinalPoint) {
         this.node = node;
         node.point = this;
         this.totalDistance = totalDistance;
+        this.heuristicDistanceToFinalPoint = heuristicDistanceToFinalPoint;
         this.isVisited = false;
 
         Point.usedNodes.push(node);
