@@ -18,16 +18,20 @@ function bindToLineSegment(fromCoords, lineStartNode, lineEndNode) {
     let h = 2 * Math.sqrt(p * (p - distanceToLineStart) * (p - distanceToLineEnd) * (p - lineLength)) / lineLength;
     
     let tmp = Math.sqrt(distanceToLineStart*distanceToLineStart - h*h);
-    //console.log(tmp + " / " + lineLength);
     let lat = lineEndNode.lat + (lineLength - tmp) * (lineStartNode.lat - lineEndNode.lat) / lineLength;
-    //console.log(lat + " from " + lineStartNode.lat + "and" + lineEndNode.lat);
     let lng = lineEndNode.lng + (lineLength - tmp) * (lineStartNode.lng - lineEndNode.lng) / lineLength;
     
-    let next_nodes = [];
-    //if (lineStartNode.next_nodes && lineStartNode.next_nodes.includes(lineEndNode)) 
+    let next_nodes = []; 
     next_nodes.push(ResultObj(lineEndNode, distanceToLineEnd));
-    next_nodes.push(ResultObj(lineStartNode, distanceToLineStart));
-    //if (lineEndNode.next_nodes && lineEndNode.next_nodes.includes(lineStartNode)) next_nodes.push(lineStartNode);
+    if (Math.sqrt(distanceToLineStart*distanceToLineStart - h*h) < 5) next_nodes.push(ResultObj(lineStartNode, distanceToLineStart));
+    else {
+        for (let i = 0, n = lineEndNode.next_nodes.length, node_obj = lineEndNode.next_nodes[0]; i < n; node_obj = lineEndNode.next_nodes[++i]) {
+            if (node_obj.node == lineStartNode) {
+                next_nodes.push(ResultObj(lineStartNode, distanceToLineStart));
+                break;
+            }
+        }
+    }
     let newNode = {lat, lng, next_nodes};
 
     //console.log("next_nodes", next_nodes);
