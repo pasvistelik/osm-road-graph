@@ -2,11 +2,19 @@
 //import {elements as roads_graph} from '../test/roads_grodno.json';
 //import {elements as roads_graph} from '../test/2KNodes.json';
 //import {elements as roads_graph} from '../test/100KNodes.json';
-import {elements as roads_graph} from '../test/200KNodes.json';
+//import {elements as roads_graph} from '../test/200KNodes.json';
+import {elements as roads_graph} from '../test/without_service.json';
 
 import RoadGraph from '../lib/roadGraph';
 
 let roadGraph = RoadGraph.fromOsmGraph(roads_graph);
+
+let counter = 0;
+for (let i = 0, n = roadGraph.nodes.length, node = roadGraph.nodes[0]; i < n; node = roadGraph.nodes[++i]) {
+    if (node.next_nodes.length == 2) counter++;
+}
+console.log("TEST 2. "+counter+" from "+roadGraph.nodes.length+" nodes ("+(~~(100*counter/roadGraph.nodes.length))+"%).");
+
 
 
 let startSortingMoment = Date.now();
@@ -21,4 +29,5 @@ let node2 = roadGraph.getNodesAround(node1, 10000)[400];
 
 console.log("["+node1.lat+";"+node1.lng+"]");
 console.log("["+node2.lat+";"+node2.lng+"]");
-roadGraph.findShortestWay(node1, node2);
+//roadGraph.findShortestWay(node1, node2);
+roadGraph.findShortestWayByCoords({lat: node1.lat+0.01, lng: node1.lng+0.01}, node2);
