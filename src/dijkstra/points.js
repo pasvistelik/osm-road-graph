@@ -20,25 +20,27 @@ class Points {
         this.collection.push(this.finalPoint);
     }
     findElement(node) {
-        if (node.point != null) return node.point;
+        if (node.point) return node.point;
         var newCreatedPoint = new Point(node, 2160000000, distance(node, this.finalPointCoords));
         this.collection.push(newCreatedPoint);
         return newCreatedPoint;
     }
     getNextUnvisitedPoint() {
         if (this.currentSelectedPoint != null) this.currentSelectedPoint.setVisited();
+        if (this.currentSelectedPoint == this.finalPoint) return null; // stop if final point was visited
         this.currentSelectedPoint = this.selectPointWithMinimalMark();
         return this.currentSelectedPoint;
     }
-    selectPointWithMinimalMark() {
-        for (var i = 0, n = this.collection.length, t = this.collection[0], p = null, currentMarkValue; i < n; t = this.collection[++i]) {
+    selectPointWithMinimalMark() { // ToDo: need to use better data structure...
+        for (let i = 0, collection = this.collection, n = collection.length, t = collection[0], p = null, currentMarkValue; i < n; t = collection[++i]){
             if (!(t.isVisited)) {
                 p = t;
                 currentMarkValue = p.totalDistance + p.heuristicDistanceToFinalPoint;
-                for (t = this.collection[++i]; i < n; t = this.collection[++i]) {
-                    if (!(t.isVisited) && t.totalDistance + t.heuristicDistanceToFinalPoint < currentMarkValue) {
+                for (t = collection[++i]; i < n; t = collection[++i]) {
+                    let dist = t.totalDistance + t.heuristicDistanceToFinalPoint;
+                    if (!(t.isVisited) && dist < currentMarkValue) {
                         p = t;
-                        currentMarkValue = p.totalDistance + p.heuristicDistanceToFinalPoint;
+                        currentMarkValue = dist;
                     }
                 }
                 return p;
@@ -48,13 +50,13 @@ class Points {
     }
     countShortestWay() {
         let counter = 1;
-        for (let selectedPoint = this.getNextUnvisitedPoint(), selectedPointNode, selectedPointTotalDistance, nodesOfNode; selectedPoint != null; selectedPoint = this.getNextUnvisitedPoint()) {
+        for (let selectedPoint = this.startPoint, selectedPointNode, selectedPointTotalDistance, nodesOfNode; selectedPoint != null; selectedPoint = this.getNextUnvisitedPoint()) {
+
+            //console.log(counter, selectedPoint);
             counter++;
             selectedPointTotalDistance = selectedPoint.totalDistance;
             selectedPointNode = selectedPoint.node;
             nodesOfNode = selectedPointNode.next_nodes;
-
-            //console.log(selectedPointNode.id);//
 
             // Завершаем поиск, если значение метки превышает минимальное найденное расстояние до пункта назначения:
             if (selectedPointTotalDistance + selectedPoint.heuristicDistanceToFinalPoint > this.finalPoint.totalDistance) {
@@ -63,25 +65,11 @@ class Points {
             }
 
             // Просматриваем все возможные дальнейшие шаги из текушей вершины:
-            for (let i = 0, n = nodesOfNode.length, nextNodeObj = nodesOfNode[0]; i < n; nextNodeObj = nodesOfNode[++i]) {
-                
-                //console.log("[" + selectedPointNode.id + " to " + nextNodeObj.node.id + "]: " + nextNodeObj.distance);
-
+            nodesOfNode.forEach(function (nextNodeObj) {
                 let nextPoint = this.findElement(nextNodeObj.node);
-                //let oldDistance = nextPoint.totalDistance;
-                if (nextPoint.tryUpdate(selectedPointTotalDistance + nextNodeObj.distance, selectedPoint)) {
-                    /*if(nextPoint == this.finalPoint) {
-                        console.log("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
-
-                        console.log("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
-
-                        console.log("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
-                    }
-                    console.log(oldDistance + " changed to (" + selectedPointTotalDistance + " + " + nextNodeObj.distance + ") = " + nextPoint.totalDistance);*/
-                }
-            }
+                nextPoint.tryUpdate(selectedPointTotalDistance + nextNodeObj.distance, selectedPoint);
+            }, this);
             
-
         }
 
         Point.clearNodes(); // delete ".point" from all used nodes
