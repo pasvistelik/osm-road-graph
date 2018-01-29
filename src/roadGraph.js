@@ -22,17 +22,27 @@ function bindToLineSegment(fromCoords, lineStartNode, lineEndNode) {
     let lng = lineEndNode.lng + (lineLength - tmp) * (lineStartNode.lng - lineEndNode.lng) / lineLength;
     
     let next_nodes = []; 
+    let previous_nodes = []; 
     next_nodes.push(ResultObj(lineEndNode, distanceToLineEnd));
-    if (Math.sqrt(distanceToLineStart*distanceToLineStart - h*h) < 5) next_nodes.push(ResultObj(lineStartNode, distanceToLineStart));
+    previous_nodes.push(ResultObj(lineStartNode, distanceToLineStart));
+    if (Math.sqrt(distanceToLineStart*distanceToLineStart - h*h) < 5) {
+        next_nodes.push(ResultObj(lineStartNode, distanceToLineStart));
+        previous_nodes.push(ResultObj(lineEndNode, distanceToLineEnd));
+    }
     else {
         for (let i = 0, n = lineEndNode.next_nodes.length, node_obj = lineEndNode.next_nodes[0]; i < n; node_obj = lineEndNode.next_nodes[++i]) {
             if (node_obj.node == lineStartNode) {
                 next_nodes.push(ResultObj(lineStartNode, distanceToLineStart));
+                previous_nodes.push(ResultObj(lineEndNode, distanceToLineEnd));
                 break;
             }
         }
     }
-    let newNode = {lat, lng, next_nodes};
+    let newNode = {lat, lng, next_nodes, previous_nodes};
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    //lineStartNode.next_nodes.push(ResultObj(newNode, Math.sqrt(distanceToLineStart*distanceToLineStart - h*h)));
+    //lineEndNode.next_nodes.push(ResultObj(newNode, Math.sqrt(distanceToLineEnd*distanceToLineEnd - h*h)));
 
     //console.log("next_nodes", next_nodes);
 
@@ -52,7 +62,10 @@ class RoadGraph {
 
     findShortestWayByCoords(fromCoords, toCoords) {
         let nearestNode = this.getNearestPlace(fromCoords); //this.getNearestNode(fromCoords);
-        let result = this.findShortestWay(nearestNode, this.getNearestNode(toCoords));
+        let nearestNodeTo = this.getNearestPlace(toCoords);////////////////////////////////////////////////////////////////////////////////////////
+        //let nearestNodeTo = this.getNearestNode(toCoords);
+        //console.log(nearestNodeTo);
+        let result = this.findShortestWay(nearestNode, nearestNodeTo);
 
         /*if (nearestNode.next_nodes.length > 0) {
             let tmpNode = nearestNode.next_nodes[0];
@@ -138,6 +151,13 @@ class RoadGraph {
                 result = item.node;
             }
         }
+
+        if (result.previous_nodes) {
+            for (let i = 0, n = result.previous_nodes.length, node_obj = result.previous_nodes[0]; i < n; node_obj = result.previous_nodes[++i]) {
+                node_obj.node.next_nodes.push({node: result, distance: node_obj.distance}); //!!!!!!!!!!!! delete this node after using!!!!!!!!!
+            }
+        }
+
         return result;
     }
 }
