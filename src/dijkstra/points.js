@@ -55,7 +55,9 @@ class Points {
             // Просматриваем все возможные дальнейшие шаги из текушей вершины:
             nodesOfNode.forEach(function (nextNodeObj) {
                 let nextPoint = this.findElement(nextNodeObj.node);
-                nextPoint.tryUpdate(selectedPointTotalDistance + nextNodeObj.distance, selectedPoint);
+                if(nextPoint.tryUpdate(selectedPointTotalDistance + nextNodeObj.distance, selectedPoint)) {
+                    this.collection.updateItem(nextPoint);
+                }
             }, this);
             
         }
