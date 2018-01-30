@@ -32,7 +32,8 @@
   },
   "dependencies": {
     "babel-core": "^6.26.0",
-    "body-parser": "^1.18.2"
+    "body-parser": "^1.18.2",
+    "heap": "^0.2.6"
   },
   "description": ""
 }

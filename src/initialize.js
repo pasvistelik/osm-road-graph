@@ -29,7 +29,7 @@ function compare_ids(a, b){
     return 0;
 }
 function initialize(osm_graph_elements) {
-
+    let edgesCount = 0;
 
     let startMoment = Date.now();
 
@@ -83,6 +83,7 @@ function initialize(osm_graph_elements) {
                     distance: dist
                 });*/
             
+                edgesCount++;
             }
             // if road is not one-way only:
             if (!is_oneway && previous_node) {
@@ -101,7 +102,7 @@ function initialize(osm_graph_elements) {
         }
     }
 
-    console.log("Initialized (" + nodes.length + " nodes). Time = " + (Date.now() - startMoment) + " ms.");
+    console.log("Initialized (" + nodes.length + " nodes, " + edgesCount + " edges). Time = " + (Date.now() - startMoment) + " ms.");
 
     return { ways, nodes };
 }

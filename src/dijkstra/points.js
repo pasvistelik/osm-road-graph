@@ -1,10 +1,14 @@
-﻿
+﻿import Heap from 'heap';
 import Point from './point';
 import distance from 'geo-coords-distance';
 
+function comparePointsFunction(a,b) {
+    return (a.totalDistance + a.heuristicDistanceToFinalPoint) - (b.totalDistance + b.heuristicDistanceToFinalPoint);
+}
+
 class Points {
     constructor(fromNode, toNode) {
-        this.collection = [];
+        this.collection = new Heap(comparePointsFunction);
 
         this.finalPointCoords = {
             lat: toNode.lat,
@@ -17,7 +21,7 @@ class Points {
         this.currentSelectedPoint = null;
 
         this.collection.push(this.startPoint);
-        this.collection.push(this.finalPoint);
+        //this.collection.push(this.finalPoint);
     }
     findElement(node) {
         if (node.point) return node.point;
@@ -28,25 +32,9 @@ class Points {
     getNextUnvisitedPoint() {
         if (this.currentSelectedPoint != null) this.currentSelectedPoint.setVisited();
         if (this.currentSelectedPoint == this.finalPoint) return null; // stop if final point was visited
-        this.currentSelectedPoint = this.selectPointWithMinimalMark();
+
+        this.currentSelectedPoint = this.collection.pop();
         return this.currentSelectedPoint;
-    }
-    selectPointWithMinimalMark() { // ToDo: need to use better data structure...
-        for (let i = 0, collection = this.collection, n = collection.length, t = collection[0], p = null, currentMarkValue; i < n; t = collection[++i]){
-            if (!(t.isVisited)) {
-                p = t;
-                currentMarkValue = p.totalDistance + p.heuristicDistanceToFinalPoint;
-                for (t = collection[++i]; i < n; t = collection[++i]) {
-                    let dist = t.totalDistance + t.heuristicDistanceToFinalPoint;
-                    if (!(t.isVisited) && dist < currentMarkValue) {
-                        p = t;
-                        currentMarkValue = dist;
-                    }
-                }
-                return p;
-            }
-        }
-        return null;
     }
     countShortestWay() {
         let counter = 1;
