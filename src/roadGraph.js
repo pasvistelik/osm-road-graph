@@ -87,6 +87,10 @@ class RoadGraph {
         let points = new Points(startNode, finalNode);
         points.countShortestWay();
 
+        //for (node_obj of finalNode.next_nodes)
+        //if (node)
+        //for (let tmp = finalNode.next_nodes; tmp.length == 2; tmp = finalNode.next_nodes)
+
         console.log("TEST 1. Time = " + (Date.now() - startSortingMoment) + " ms.");
 
 

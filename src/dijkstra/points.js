@@ -3,7 +3,7 @@ import Point from './point';
 import distance from 'geo-coords-distance';
 
 function comparePointsFunction(a,b) {
-    return (a.totalDistance + a.heuristicDistanceToFinalPoint) - (b.totalDistance + b.heuristicDistanceToFinalPoint);
+    return a.markValue - b.markValue;
 }
 
 class Points {
@@ -21,7 +21,6 @@ class Points {
         this.currentSelectedPoint = null;
 
         this.collection.push(this.startPoint);
-        //this.collection.push(this.finalPoint);
     }
     findElement(node) {
         if (node.point) return node.point;
@@ -37,18 +36,14 @@ class Points {
         return this.currentSelectedPoint;
     }
     countShortestWay() {
-        let counter = 1;
         for (let selectedPoint = this.startPoint, selectedPointNode, selectedPointTotalDistance, nodesOfNode; selectedPoint != null; selectedPoint = this.getNextUnvisitedPoint()) {
 
-            //console.log(counter, selectedPoint);
-            counter++;
             selectedPointTotalDistance = selectedPoint.totalDistance;
             selectedPointNode = selectedPoint.node;
             nodesOfNode = selectedPointNode.next_nodes;
 
             // Завершаем поиск, если значение метки превышает минимальное найденное расстояние до пункта назначения:
             if (selectedPointTotalDistance + selectedPoint.heuristicDistanceToFinalPoint > this.finalPoint.totalDistance) {
-                console.log("Breaked.");
                 break;
             }
 
@@ -63,7 +58,6 @@ class Points {
         }
 
         Point.clearNodes(); // delete ".point" from all used nodes
-        console.log("All: "+counter);
     }
 
 }

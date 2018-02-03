@@ -5,6 +5,7 @@ class Point {
         node.point = this;
         this.totalDistance = totalDistance;
         this.heuristicDistanceToFinalPoint = heuristicDistanceToFinalPoint;
+        this.markValue = totalDistance + heuristicDistanceToFinalPoint;
         this.isVisited = false;
 
         Point.usedNodes.push(node);
@@ -13,6 +14,7 @@ class Point {
         if (newTotalDistance < this.totalDistance) {
             this.previousPoint = previousPoint;
             this.totalDistance = newTotalDistance;
+            this.markValue = newTotalDistance + this.heuristicDistanceToFinalPoint;
             return true;
         }
         return false;
