@@ -49,18 +49,30 @@ function bindToLineSegment(fromCoords, lineStartNode, lineEndNode) {
     return ResultObj(newNode, h);
 }
 
+var GraphTypes = {
+    pedestrian: 0,
+    car: 1,
+    emergency: 2
+}
+
 class RoadGraph {
-    constructor(ways, nodes) {
+    static GraphTypes = GraphTypes;
+    constructor(ways, nodes, type) {
         this.ways = ways;
         this.nodes = nodes;
+        this.graphType = type;
     }
-    static fromOsmGraph(osm_graph_elements){
-        let result = initializeFromOsmGraph(osm_graph_elements);
-        return new RoadGraph(result.ways, result.nodes);
+    static fromOsmGraph(osm_graph_elements, type){
+        let result = initializeFromOsmGraph(osm_graph_elements, type);
+        return new RoadGraph(result.ways, result.nodes, type);
     }
 
 
     findShortestWayByCoords(fromCoords, toCoords) {
+        /*let startNode, finalNode;
+        if (this.graphType === GraphTypes.pedestrian) {
+            startNode = createNodeWithRelationsToNearestNodes(fromCoords)//...
+        }*/
         let nearestNode = this.getNearestPlace(fromCoords); //this.getNearestNode(fromCoords);
         let nearestNodeTo = this.getNearestPlace(toCoords);////////////////////////////////////////////////////////////////////////////////////////
         //let nearestNodeTo = this.getNearestNode(toCoords);
@@ -166,4 +178,5 @@ class RoadGraph {
     }
 }
 
+export {RoadGraph, GraphTypes};
 export default RoadGraph;

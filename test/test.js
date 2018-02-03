@@ -3,11 +3,12 @@
 //import {elements as roads_graph} from '../test/2KNodes.json';
 //import {elements as roads_graph} from '../test/100KNodes.json';
 //import {elements as roads_graph} from '../test/200KNodes.json';
-import {elements as roads_graph} from '../test/without_service.json';
+//import {elements as roads_graph} from '../test/without_service.json';
+import {elements as roads_graph} from '../test/with_footways.json';
 
 import RoadGraph from '../lib/roadGraph';
 
-let roadGraph = RoadGraph.fromOsmGraph(roads_graph);
+let roadGraph = RoadGraph.fromOsmGraph(roads_graph, RoadGraph.GraphTypes.pedestrian);
 
 let counter = 0;
 for (let i = 0, n = roadGraph.nodes.length, node = roadGraph.nodes[0]; i < n; node = roadGraph.nodes[++i]) {

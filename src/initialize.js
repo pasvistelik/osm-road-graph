@@ -1,4 +1,5 @@
 import distance from 'geo-coords-distance';
+import {GraphTypes} from './roadGraph';
 
 function binaryFind(array, predicateForArrayItem)
 {
@@ -28,7 +29,7 @@ function compare_ids(a, b){
     if (a.id < b.id) return -1;
     return 0;
 }
-function initialize(osm_graph_elements) {
+function initialize(osm_graph_elements, type) {
     let edgesCount = 0;
 
     let startMoment = Date.now();
@@ -86,7 +87,7 @@ function initialize(osm_graph_elements) {
                 edgesCount++;
             }
             // if road is not one-way only:
-            if (!is_oneway && previous_node) {
+            if ((type === GraphTypes.pedestrian || !is_oneway) && previous_node) {
                 //let dist = ~~distance(current_node, previous_node);
                 //let dist = ~~distance({lat: current_node.lat, lng: current_node.lon}, {lat: previous_node.lat, lng: previous_node.lon})
                 current_node.next_nodes.push({
