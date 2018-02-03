@@ -3,9 +3,9 @@ import distance from 'geo-coords-distance';
 import Points from './dijkstra/points';
 
 function bindToLineSegment(fromCoords, lineStartNode, lineEndNode) {
-    let distanceToLineStart = distance(fromCoords, lineStartNode);
-    let distanceToLineEnd = distance(fromCoords, lineEndNode);
-    let lineLength = distance(lineStartNode, lineEndNode);
+    let distanceToLineStart = ~~distance(fromCoords, lineStartNode);
+    let distanceToLineEnd = ~~distance(fromCoords, lineEndNode);
+    let lineLength = ~~distance(lineStartNode, lineEndNode);
 
     let ResultObj = (node, distance) => { return {node, distance} };
 
@@ -93,37 +93,20 @@ class RoadGraph {
         return result;
     }
     findShortestWay(startNode, finalNode){
-
-        let startSortingMoment = Date.now();
-
         let points = new Points(startNode, finalNode);
         points.countShortestWay();
 
-        //for (node_obj of finalNode.next_nodes)
-        //if (node)
-        //for (let tmp = finalNode.next_nodes; tmp.length == 2; tmp = finalNode.next_nodes)
-
-        console.log("TEST 1. Time = " + (Date.now() - startSortingMoment) + " ms.");
-
-
-        let tmp_str = "";
-        let counter = 0;
         let coordsList = [];
-        for (let currentPoint = points.finalPoint; currentPoint != null; ) {
-            tmp_str += currentPoint.node.id + "("+currentPoint.totalDistance+")" + " < < < ";
+        for (let currentPoint = points.finalPoint; currentPoint != null; currentPoint = currentPoint.previousPoint) {
             coordsList.push({
                 lat: currentPoint.node.lat,
                 lng: currentPoint.node.lng
             });
-
-            currentPoint = currentPoint.previousPoint;
-            counter++;
         }
-        //console.log(tmp_str);
-        console.log("NODES: "+counter);
-        //console.log(JSON.stringify(coordsList));
-
-        return coordsList.reverse();
+        return {
+            distance: ~~points.finalPoint.totalDistance,
+            polyline: coordsList.reverse()
+        };
     }
 
     getNodesAround(coords, radius) {

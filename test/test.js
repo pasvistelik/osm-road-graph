@@ -28,7 +28,6 @@ let node1 = roadGraph.getNodesAround({lat: 53.6843, lng: 23.83872}, 50)[0]
 let node2 = roadGraph.getNodesAround(node1, 10000)[400];
 //let node2 = roadGraph.nodes[100];
 
-console.log("["+node1.lat+";"+node1.lng+"]");
-console.log("["+node2.lat+";"+node2.lng+"]");
 //roadGraph.findShortestWay(node1, node2);
-roadGraph.findShortestWayByCoords({lat: node1.lat+0.01, lng: node1.lng+0.01}, node2);
+let result = roadGraph.findShortestWayByCoords({lat: node1.lat+0.01, lng: node1.lng+0.01}, node2);
+console.log(result);
