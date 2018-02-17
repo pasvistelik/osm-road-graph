@@ -1,13 +1,13 @@
 
 ## Usage examples:
-Initialize:
+### Initialize:
 ```js
 import RoadGraph from 'osm-road-graph/lib/roadGraph';
 import {elements as roads_graph} from 'osm-road-graph/test/with_footways.json';
 
 const roadGraph = RoadGraph.fromOsmGraph(roads_graph, RoadGraph.GraphTypes.pedestrian);
 ```
-
+### Ways finding:
 Find way by coords:
 ```js
 const coords1 = {lat: 53.68350, lng: 23.83437};
@@ -22,6 +22,18 @@ const node1 = roadGraph.nodes[5];
 const node2 = roadGraph.nodes[100];
 
 const result = roadGraph.findShortestWay(node1, node2);
+```
+
+Result:
+```js
+{ 
+  distance: 7355,
+  polyline: [ 
+    {lat: 53.68350, lng: 23.83437},
+      ...
+    {lat: 53.67722, lng: 23.82298}
+  ]
+}
 ```
 
 ## TODO:
