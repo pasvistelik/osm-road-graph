@@ -117,5 +117,5 @@ Results - Modified points object:
 
 
 ## Todo:
-* ~~Add function for generating distance matrix.~~
-* Jump through single-way-out nodes.
+- [x] Add function for generating distance matrix.
+- [ ] Jump through single-way-out nodes.
