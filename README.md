@@ -36,5 +36,6 @@ Result:
 }
 ```
 
-## TODO:
-* Add function for generating distance matrix
+## Todo:
+* Add function for generating distance matrix.
+* Jump through single-way-out nodes.
