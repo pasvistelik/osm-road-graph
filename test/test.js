@@ -31,3 +31,28 @@ let node2 = roadGraph.getNodesAround(node1, 10000)[400];
 //roadGraph.findShortestWay(node1, node2);
 let result = roadGraph.findShortestWayByCoords({lat: node1.lat+0.01, lng: node1.lng+0.01}, node2);
 console.log(result);
+
+
+console.log("\ndistanceMatrix test:");
+let points = [
+    {
+        name: "Castle",
+        coords: {lat: 53.67719, lng: 23.823}
+    }, {
+        name: "City Square",
+        coords: {lat: 53.68384, lng: 23.83443}
+    }, {
+        name: "Zoo",
+        coords: {lat: 53.68817, lng: 23.84796}
+    }
+];
+const gettingCoordsFunc = (p => p.coords);
+const gettingPointIdentificatorFunc = (p => p.name);
+const updatingPointFunc = (function(currentPoint, otherPoint, distance){
+    if (!currentPoint.distances) currentPoint.distances = [];
+    currentPoint.distances.push({point: otherPoint.name, distance});
+});
+// makeDistanceMatrix(points, gettingCoordsFunc = null, distanceLimit = Infinity, gettingPointIdentificatorFunc = null, updatingPointFunc = null)
+const distanceMatrix = roadGraph.makeDistanceMatrix(points, gettingCoordsFunc, 1500, gettingPointIdentificatorFunc, updatingPointFunc)
+console.log(distanceMatrix);
+console.log(points);

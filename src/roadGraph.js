@@ -1,6 +1,7 @@
 import initializeFromOsmGraph from '../lib/initialize';
 import distance from 'geo-coords-distance';
 import Points from './dijkstra/points';
+import makeDistanceMatrix from './makeDistanceMatrix';
 
 function bindToLineSegment(fromCoords, lineStartNode, lineEndNode) {
     let distanceToLineStart = ~~distance(fromCoords, lineStartNode);
@@ -61,6 +62,7 @@ class RoadGraph {
         this.ways = ways;
         this.nodes = nodes;
         this.graphType = type;
+        this.makeDistanceMatrix = makeDistanceMatrix;
     }
     static fromOsmGraph(osm_graph_elements, type){
         let result = initializeFromOsmGraph(osm_graph_elements, type);
