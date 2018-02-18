@@ -119,3 +119,4 @@ Results - Modified points object:
 ## Todo:
 - [x] Add function for generating distance matrix.
 - [ ] Jump through single-way-out nodes.
+- [ ] Prolong a found path to the nearest roads intersection if the destination is on the other side of the road (for vehicles).
