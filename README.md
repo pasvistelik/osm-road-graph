@@ -1,4 +1,7 @@
-
+## Install:
+```sh
+npm i osm-road-graph
+```
 ## Usage examples:
 ### Initialize:
 ```js
