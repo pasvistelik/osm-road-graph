@@ -53,6 +53,9 @@ const updatingPointFunc = (function(currentPoint, otherPoint, distance){
     currentPoint.distances.push({point: otherPoint.name, distance});
 });
 // makeDistanceMatrix(points, gettingCoordsFunc = null, distanceLimit = Infinity, gettingPointIdentificatorFunc = null, updatingPointFunc = null)
-const distanceMatrix = roadGraph.makeDistanceMatrix(points, gettingCoordsFunc, 1500, gettingPointIdentificatorFunc, updatingPointFunc)
+let distanceMatrix = roadGraph.makeDistanceMatrix(points, gettingCoordsFunc, 1500, gettingPointIdentificatorFunc, updatingPointFunc);
+
+points = [ {lat: 53.67719, lng: 23.823}, {lat: 53.68384, lng: 23.83443}, {lat: 53.68817, lng: 23.84796} ];
+distanceMatrix = roadGraph.makeDistanceMatrix(points);
 console.log(distanceMatrix);
 console.log(points);

@@ -1,7 +1,7 @@
 import distance from 'geo-coords-distance';
 import {GraphTypes} from './roadGraph';
 
-function makeDistanceMatrix(points, gettingCoordsFunc = null, distanceLimit = Infinity, gettingPointIdentificatorFunc = null, updatingPointFunc = null) {
+export default function makeDistanceMatrix(points, gettingCoordsFunc = null, distanceLimit = Infinity, gettingPointIdentificatorFunc = null, updatingPointFunc = null) {
     let distanceMatrix = [];
     if (!gettingCoordsFunc) gettingCoordsFunc = (p => {return {lat: p.lat, lng: p.lng}});
     if (!gettingPointIdentificatorFunc) gettingPointIdentificatorFunc = (p => p);
@@ -16,7 +16,7 @@ function makeDistanceMatrix(points, gettingCoordsFunc = null, distanceLimit = In
             if (i === j) continue;
             finalPointCoords = gettingCoordsFunc(finalPoint);
             const finalPointKey = gettingPointIdentificatorFunc(finalPoint);
-            
+
             heuristicDistance = distance(startPointCoords, finalPointCoords);
             if (heuristicDistance >= distanceLimit) continue;
 
@@ -35,5 +35,3 @@ function makeDistanceMatrix(points, gettingCoordsFunc = null, distanceLimit = In
     }
     return distanceMatrix;
 }
-
-export default makeDistanceMatrix;

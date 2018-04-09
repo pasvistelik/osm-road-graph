@@ -3,54 +3,59 @@ import distance from 'geo-coords-distance';
 import Points from './dijkstra/points';
 import makeDistanceMatrix from './makeDistanceMatrix';
 
-function bindToLineSegment(fromCoords, lineStartNode, lineEndNode) {
-    let distanceToLineStart = ~~distance(fromCoords, lineStartNode);
-    let distanceToLineEnd = ~~distance(fromCoords, lineEndNode);
-    let lineLength = ~~distance(lineStartNode, lineEndNode);
-
-    let ResultObj = (node, distance) => { return {node, distance} };
-
-    if (lineLength*lineLength < Math.abs(distanceToLineStart*distanceToLineStart - distanceToLineEnd*distanceToLineEnd)) {
-        if (distanceToLineStart < distanceToLineEnd) return ResultObj(lineStartNode, distanceToLineStart);
-        return ResultObj(lineEndNode, distanceToLineEnd);
+class ResultObj {
+    constructor(node, distance) {
+        this.node = node;
+        this.distance = distance;
     }
-    
-    let p = (distanceToLineStart + distanceToLineEnd + lineLength) / 2;
-    let h = 2 * Math.sqrt(p * (p - distanceToLineStart) * (p - distanceToLineEnd) * (p - lineLength)) / lineLength;
-    
-    let tmp = Math.sqrt(distanceToLineStart*distanceToLineStart - h*h);
-    let lat = lineEndNode.lat + (lineLength - tmp) * (lineStartNode.lat - lineEndNode.lat) / lineLength;
-    let lng = lineEndNode.lng + (lineLength - tmp) * (lineStartNode.lng - lineEndNode.lng) / lineLength;
-    
-    let next_nodes = []; 
-    let previous_nodes = []; 
-    next_nodes.push(ResultObj(lineEndNode, distanceToLineEnd));
-    previous_nodes.push(ResultObj(lineStartNode, distanceToLineStart));
-    if (Math.sqrt(distanceToLineStart*distanceToLineStart - h*h) < 5) {
-        next_nodes.push(ResultObj(lineStartNode, distanceToLineStart));
-        previous_nodes.push(ResultObj(lineEndNode, distanceToLineEnd));
+}
+
+function bindToLineSegment(fromCoords, lineStartNode, lineEndNode) {
+    const distanceToLineStart = ~~distance(fromCoords, lineStartNode);
+    const distanceToLineEnd = ~~distance(fromCoords, lineEndNode);
+    const lineLength = ~~distance(lineStartNode, lineEndNode);
+
+    if (lineLength ** 2 < Math.abs(distanceToLineStart ** 2 - distanceToLineEnd ** 2)) {
+        if (distanceToLineStart < distanceToLineEnd) return new ResultObj(lineStartNode, distanceToLineStart);
+        return new ResultObj(lineEndNode, distanceToLineEnd);
+    }
+
+    const p = (distanceToLineStart + distanceToLineEnd + lineLength) / 2;
+    const h = 2 * Math.sqrt(p * (p - distanceToLineStart) * (p - distanceToLineEnd) * (p - lineLength)) / lineLength;
+
+    const tmp = Math.sqrt(distanceToLineStart ** 2 - h ** 2);
+    const lat = lineEndNode.lat + (lineLength - tmp) * (lineStartNode.lat - lineEndNode.lat) / lineLength;
+    const lng = lineEndNode.lng + (lineLength - tmp) * (lineStartNode.lng - lineEndNode.lng) / lineLength;
+
+    let next_nodes = [];
+    let previous_nodes = [];
+    next_nodes.push(new ResultObj(lineEndNode, distanceToLineEnd));
+    previous_nodes.push(new ResultObj(lineStartNode, distanceToLineStart));
+    if (tmp < 5) {
+        next_nodes.push(new ResultObj(lineStartNode, distanceToLineStart));
+        previous_nodes.push(new ResultObj(lineEndNode, distanceToLineEnd));
     }
     else {
-        for (let i = 0, n = lineEndNode.next_nodes.length, node_obj = lineEndNode.next_nodes[0]; i < n; node_obj = lineEndNode.next_nodes[++i]) {
+        for (let node_obj of lineEndNode.next_nodes) {
             if (node_obj.node == lineStartNode) {
-                next_nodes.push(ResultObj(lineStartNode, distanceToLineStart));
-                previous_nodes.push(ResultObj(lineEndNode, distanceToLineEnd));
+                next_nodes.push(new ResultObj(lineStartNode, distanceToLineStart));
+                previous_nodes.push(new ResultObj(lineEndNode, distanceToLineEnd));
                 break;
             }
         }
     }
-    let newNode = {lat, lng, next_nodes, previous_nodes};
+    const newNode = {lat, lng, next_nodes, previous_nodes};
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    //lineStartNode.next_nodes.push(ResultObj(newNode, Math.sqrt(distanceToLineStart*distanceToLineStart - h*h)));
-    //lineEndNode.next_nodes.push(ResultObj(newNode, Math.sqrt(distanceToLineEnd*distanceToLineEnd - h*h)));
+    //lineStartNode.next_nodes.push(new ResultObj(newNode, Math.sqrt(distanceToLineStart*distanceToLineStart - h*h)));
+    //lineEndNode.next_nodes.push(new ResultObj(newNode, Math.sqrt(distanceToLineEnd*distanceToLineEnd - h*h)));
 
     //console.log("next_nodes", next_nodes);
 
-    return ResultObj(newNode, h);
+    return new ResultObj(newNode, h);
 }
 
-var GraphTypes = {
+const GraphTypes = {
     pedestrian: 0,
     car: 1,
     emergency: 2
@@ -65,10 +70,9 @@ class RoadGraph {
         this.makeDistanceMatrix = makeDistanceMatrix;
     }
     static fromOsmGraph(osm_graph_elements, type){
-        let result = initializeFromOsmGraph(osm_graph_elements, type);
+        const result = initializeFromOsmGraph(osm_graph_elements, type);
         return new RoadGraph(result.ways, result.nodes, type);
     }
-
 
     findShortestWayByCoords(fromCoords, toCoords) {
         /*let startNode, finalNode;
@@ -76,7 +80,7 @@ class RoadGraph {
             startNode = createNodeWithRelationsToNearestNodes(fromCoords)//...
         }*/
         let nearestNode = this.getNearestPlace(fromCoords); //this.getNearestNode(fromCoords);
-        let nearestNodeTo = this.getNearestPlace(toCoords);////////////////////////////////////////////////////////////////////////////////////////
+        let nearestNodeTo = this.getNearestPlace(toCoords); ////////////////////////////////////////////////////////////////////////////////////////
         //let nearestNodeTo = this.getNearestNode(toCoords);
         //console.log(nearestNodeTo);
         let result = this.findShortestWay(nearestNode, nearestNodeTo);
@@ -94,7 +98,8 @@ class RoadGraph {
 
         return result;
     }
-    findShortestWay(startNode, finalNode){
+
+    findShortestWay(startNode, finalNode) {
         let points = new Points(startNode, finalNode);
         points.countShortestWay();
 
@@ -112,17 +117,11 @@ class RoadGraph {
     }
 
     getNodesAround(coords, radius) {
-        let result = [];
-        for (let i = 0, num_of_nodes = this.nodes.length, node = this.nodes[0]; i < num_of_nodes; node = this.nodes[++i]) {
-            if (distance(coords, node /*{lat: node.lat, lng: node.lon}*/) < radius) {
-                result.push(node);
-            }
-        }
-        return result;
+        return this.nodes.filter(node => distance(coords, node) < radius);
     }
     getNearestNode(coords) {
         let result = null;
-        let minDistance = 1000000000;
+        let minDistance = Infinity;
         for (let i = 0, num_of_nodes = this.nodes.length, node = this.nodes[0], dist; i < num_of_nodes; node = this.nodes[++i]) {
             dist = distance(coords, node /*{lat: node.lat, lng: node.lon}*/);
             if (dist < minDistance) {
@@ -145,9 +144,9 @@ class RoadGraph {
         }
 
         let result = null;
-        let minDistance = 1000000000;
+        let minDistance = Infinity;
         for (let i = 0, count = candidatesNodes.length, item = candidatesNodes[0]; i < count; item = candidatesNodes[++i]) {
-            if (item.distance < minDistance) { 
+            if (item.distance < minDistance) {
                 minDistance = item.distance;
                 result = item.node;
             }
