@@ -1,6 +1,19 @@
 import distance from 'geo-coords-distance';
 import {GraphTypes} from './roadGraph';
 
+var vehicleRoadTypes = [
+  'motorway', 'motorway_link',
+  'trunk', 'trunk_link',
+  'primary', 'primary_link',
+  'secondary', 'secondary_link',
+  'tertiary', 'tertiary_link',
+  'unclassified', 'unclassified_link',
+  'residential',
+  'service',
+  'living_street',
+  'track'
+];
+
 function binaryFind(array, predicateForArrayItem)
 {
     let i = 0, j = array.length, k, predicateResult, currentItem;
@@ -27,15 +40,18 @@ function compare_ids(a, b){
     if (a.id < b.id) return -1;
     return 0;
 }
-function initialize(osm_graph_elements, type) {
+function initialize(osm_graph_elements_original, type) {
+    var osm_graph_elements = JSON.parse(JSON.stringify(osm_graph_elements_original));
     let ways = [];
     let nodes = [];
     let ways_index = 0;
     osm_graph_elements.forEach(item => {
         switch(item.type) {
             case "way": {
-                item.local_id = ways_index++;
-                ways.push(item);
+                if(type === GraphTypes.pedestrian || vehicleRoadTypes.includes(item.tags.highway)) {
+                    item.local_id = ways_index++;
+                    ways.push(item);
+                }
                 break;
             }
             case "node": {
